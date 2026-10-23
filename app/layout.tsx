@@ -4,8 +4,8 @@ import "./globals.css";
 
 
 export const metadata: Metadata = {
-  title: "Prueba técnica Mango",
-  description: "Prueba técnica para el puesto de desarrollador en Mango",
+  title: "Custom Range Slider Component",
+  description: "A custom range slider component",
 };
 
 export default function RootLayout({ children }: LayoutProps<"/">) {
