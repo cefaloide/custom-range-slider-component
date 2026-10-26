@@ -5,10 +5,10 @@ export default function Home() {
     <div>
       <h1>Home</h1>
       <div>
-        <Link href="/exercice1">Go to Exercice 1</Link>
+        <Link href="/exercise1">Go to Exercise 1</Link>
       </div>
       <div>
-        <Link href="/exercice2">Go to Exercice 2</Link>
+        <Link href="/exercise2">Go to Exercise 2</Link>
       </div>
     </div>
   );

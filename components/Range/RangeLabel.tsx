@@ -1,8 +1,7 @@
-"use client";
-
 import React, { useState, useRef, useEffect } from "react";
 import { formatCurrency, validateLabelInput } from "@/lib/range-utils";
 import { Check, Edit2, AlertCircle } from "lucide-react";
+import { DEFAULT_CURRENCY } from "./constants";
 
 interface RangeLabelProps {
   value: number;
@@ -13,21 +12,19 @@ interface RangeLabelProps {
   maxLimit: number;
   otherHandleValue: number;
   onValueCommit?: (newValue: number) => void;
-  labelTestId?: string;
-  inputTestId?: string;
+  testId?: string;
 }
 
 export function RangeLabel({
   value,
-  currency = "€",
+  currency = DEFAULT_CURRENCY,
   isEditable = false,
   isMinHandle,
   minLimit,
   maxLimit,
   otherHandleValue,
   onValueCommit,
-  labelTestId,
-  inputTestId,
+  testId,
 }: RangeLabelProps) {
   const [isEditing, setIsEditing] = useState(false);
   const [inputValue, setInputValue] = useState("");
@@ -58,6 +55,7 @@ export function RangeLabel({
       maxLimit,
       otherHandleValue,
       isMinHandle,
+      currency,
     );
 
     if (result.isValid) {
@@ -65,13 +63,8 @@ export function RangeLabel({
       setIsEditing(false);
       onValueCommit?.(result.value);
     } else {
+      // Keep the input open until the user fixes the value or cancels
       setErrorMessage(result.error || "Invalid value");
-      // Auto dismiss error and clamp or keep open
-      setTimeout(() => {
-        setErrorMessage(null);
-        setIsEditing(false);
-        onValueCommit?.(result.value);
-      }, 1400);
     }
   };
 
@@ -93,9 +86,7 @@ export function RangeLabel({
           <input
             ref={inputRef}
             type="text"
-            data-testid={
-              inputTestId || (isMinHandle ? "min-input" : "max-input")
-            }
+            data-testid={testId && `${testId}-input`}
             value={inputValue}
             onChange={(e) => {
               setInputValue(e.target.value);
@@ -139,7 +130,7 @@ export function RangeLabel({
       type="button"
       onClick={handleStartEdit}
       disabled={!isEditable}
-      data-testid={labelTestId || (isMinHandle ? "min-label" : "max-label")}
+      data-testid={testId}
       aria-label={
         isEditable
           ? `${isMinHandle ? "Minimum value" : "Maximum value"} ${formatCurrency(value, currency)}. Click to edit.`

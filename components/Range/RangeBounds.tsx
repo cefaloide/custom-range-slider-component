@@ -1,4 +1,4 @@
-"use client";
+import { formatCurrency } from "@/lib/range-utils";
 
 interface RangeBoundsProps {
   minLimit: number;
@@ -17,8 +17,8 @@ export function RangeBounds({
       data-testid="range-bounds-header"
       className="flex justify-between items-center mb-1 text-[13px] font-mono font-medium text-neutral-500 tracking-tight"
     >
-      <span>Min {`${minLimit}${currency}`}</span>
-      <span>Max {`${maxLimit}${currency}`}</span>
+      <span>Min {formatCurrency(minLimit, currency)}</span>
+      <span>Max {formatCurrency(maxLimit, currency)}</span>
     </div>
   );
 }

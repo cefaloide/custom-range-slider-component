@@ -1,3 +1,5 @@
+import { DEFAULT_CURRENCY } from "@/components/Range/constants";
+
 /**
  * Clamps a number between min and max bounds.
  */
@@ -98,10 +100,13 @@ export function validateLabelInput(
   maxBound: number,
   otherHandleValue: number,
   isMinHandle: boolean,
+  currency = DEFAULT_CURRENCY,
 ): LabelValidationResult {
   // Strip currency symbol and whitespace
   const sanitized = rawInput
-    .replace(/[€,\s]/g, (match) => (match === "," ? "." : ""))
+    .split(currency)
+    .join("")
+    .replace(/[,\s]/g, (match) => (match === "," ? "." : ""))
     .trim();
 
   if (sanitized === "") {
@@ -169,7 +174,7 @@ export function validateLabelInput(
  */
 export function formatCurrency(
   value: number,
-  currency = "€",
+  currency = DEFAULT_CURRENCY,
   options?: { showDecimalsIfZero?: boolean },
 ): string {
   if (isNaN(value)) return `0${currency}`;

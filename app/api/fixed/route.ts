@@ -1,8 +1,5 @@
 import { NextResponse } from "next/server";
-
-export interface FixedApiResponse {
-  rangeValues: number[];
-}
+import type { FixedApiResponse } from "@/types/api";
 
 /**
  * Mocked HTTP service

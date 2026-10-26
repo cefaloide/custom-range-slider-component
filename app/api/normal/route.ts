@@ -1,9 +1,5 @@
 import { NextResponse } from "next/server";
-
-export interface NormalApiResponse {
-  min: number;
-  max: number;
-}
+import type { NormalApiResponse } from "@/types/api";
 
 /**
  * Mocked HTTP service

@@ -1,11 +1,13 @@
-import {RANGE_MODE} from "./constants";
+import { RANGE_MODE } from "./constants";
 
 export interface BaseRangeProps {
   ariaLabelMax?: string;
   ariaLabelMin?: string;
   className?: string;
   currency?: string;
+  onChange: (value: [number, number]) => void;
   showBounds?: boolean;
+  value: [number, number];
 }
 
 export interface NormalRangeProps extends BaseRangeProps {
@@ -13,10 +15,8 @@ export interface NormalRangeProps extends BaseRangeProps {
   max: number;
   min: number;
   mode?: typeof RANGE_MODE.NORMAL;
-  onChange: (value: [number, number]) => void;
   rangeValues?: never;
   step?: number;
-  value: [number, number];
 }
 
 export interface FixedRangeProps extends BaseRangeProps {
@@ -24,10 +24,8 @@ export interface FixedRangeProps extends BaseRangeProps {
   max?: never;
   min?: never;
   mode: typeof RANGE_MODE.FIXED;
-  onChange: (value: [number, number]) => void;
   rangeValues: number[];
   step?: never;
-  value: [number, number];
 }
 
 export type RangeProps = NormalRangeProps | FixedRangeProps;

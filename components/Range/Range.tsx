@@ -7,12 +7,13 @@ import { RangeBounds } from "./RangeBounds";
 import { useRangeModel } from "./hooks/useRangeModel";
 import { useRangeDrag } from "./hooks/useRangeDrag";
 import { useRangeKeyboard } from "./hooks/useRangeKeyboard";
+import { DEFAULT_CURRENCY } from "./constants";
 import type { RangeProps } from "./types";
 
 export function Range(props: RangeProps) {
   const {
     className = "",
-    currency = "€",
+    currency = DEFAULT_CURRENCY,
     showBounds = true,
     ariaLabelMin = "Minimum range value",
     ariaLabelMax = "Maximum range value",
@@ -53,7 +54,6 @@ export function Range(props: RangeProps) {
 
   return (
     <div
-      data-testid="range-component"
       className={`relative w-full max-w-xl mx-auto py-4 select-none ${className}`}
     >
       {showBounds && (
@@ -77,8 +77,7 @@ export function Range(props: RangeProps) {
             maxLimit={maxLimit}
             otherHandleValue={currentMax}
             onValueCommit={(value) => setHandleValue(0, value)}
-            labelTestId="min-label"
-            inputTestId="min-label-input"
+            testId="min-label"
           />
         </div>
 
@@ -129,8 +128,7 @@ export function Range(props: RangeProps) {
             maxLimit={maxLimit}
             otherHandleValue={currentMin}
             onValueCommit={(value) => setHandleValue(1, value)}
-            labelTestId="max-label"
-            inputTestId="max-label-input"
+            testId="max-label"
           />
         </div>
       </div>

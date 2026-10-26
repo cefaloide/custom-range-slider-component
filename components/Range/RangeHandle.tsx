@@ -1,5 +1,3 @@
-"use client";
-
 import React from "react";
 
 interface RangeHandleProps {
@@ -39,7 +37,7 @@ export function RangeHandle({
       style={{
         left: `${positionPercent}%`,
       }}
-      className={`absolute top-1/2 -translate-y-1/2 -translate-x-1/2 select-none  z-10 transition-transform duration-100 ${
+      className={`absolute top-1/2 -translate-y-1/2 -translate-x-1/2 select-none touch-none z-10 transition-transform duration-100 ${
         isDragging
           ? "cursor-grabbing scale-135"
           : "cursor-grab hover:scale-130 active:cursor-grabbing"
@@ -50,7 +48,7 @@ export function RangeHandle({
         {/* Solid black circle handle */}
         <div
           className={`w-4 h-4 rounded-full bg-black border border-black transition-all ${
-            isDragging && "scale-110 ring-2 ring-neutral-400"
+            isDragging ? "scale-110 ring-2 ring-neutral-400" : ""
           }`}
         />
       </div>
