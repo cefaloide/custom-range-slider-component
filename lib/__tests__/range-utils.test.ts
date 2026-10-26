@@ -5,6 +5,8 @@ import {
   percentToValue,
   indexToPercent,
   percentToIndex,
+  snapToStep,
+  closestIndex,
   resolveNonCrossingRange,
   validateLabelInput,
   formatCurrency,
@@ -44,6 +46,23 @@ describe("indexToPercent / percentToIndex", () => {
     expect(indexToPercent(10, 5)).toBe(100);
     expect(percentToIndex(30, 5)).toBe(1);
     expect(percentToIndex(-50, 5)).toBe(0);
+  });
+});
+
+describe("snapToStep", () => {
+  it("clamps and rounds to the closest step from min", () => {
+    expect(snapToStep(5.994, 1, 100, 0.01)).toBe(5.99);
+    expect(snapToStep(7, 1, 100, 5)).toBe(6);
+    expect(snapToStep(Infinity, 0, 10, 3)).toBe(9);
+    expect(snapToStep(-Infinity, 0, 10, 3)).toBe(0);
+  });
+});
+
+describe("closestIndex", () => {
+  it("finds the closest option, the first one on a tie", () => {
+    expect(closestIndex([1.99, 5.99, 10.99], 6.5)).toBe(1);
+    expect(closestIndex([1.99, 5.99, 10.99], 100)).toBe(2);
+    expect(closestIndex([0, 10], 5)).toBe(0);
   });
 });
 

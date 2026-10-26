@@ -1,5 +1,6 @@
 import React, { useRef, useState, useCallback, useEffect } from "react";
 import { clamp } from "@/lib/range-utils";
+import { HANDLE } from "../constants";
 import type { HandleIndex } from "../types";
 
 interface UseRangeDragOptions {
@@ -8,15 +9,16 @@ interface UseRangeDragOptions {
   moveHandleToPercent: (handle: HandleIndex, percent: number) => void;
 }
 
+// "undecided": both handles overlap, the first move's direction picks one
+type DragTarget = HandleIndex | "undecided";
+
 export function useRangeDrag({
   minPercent,
   maxPercent,
   moveHandleToPercent,
 }: UseRangeDragOptions) {
   const trackRef = useRef<HTMLDivElement>(null);
-  const [draggingHandle, setDraggingHandle] = useState<HandleIndex | null>(
-    null,
-  );
+  const [dragTarget, setDragTarget] = useState<DragTarget | null>(null);
 
   const getPercentFromClientX = useCallback((clientX: number): number => {
     const rect = trackRef.current?.getBoundingClientRect();
@@ -26,12 +28,22 @@ export function useRangeDrag({
 
   // Global pointer listeners while a handle is being dragged
   useEffect(() => {
-    if (draggingHandle === null) return;
+    if (dragTarget === null) return;
 
     const handlePointerMove = (e: PointerEvent) => {
-      moveHandleToPercent(draggingHandle, getPercentFromClientX(e.clientX));
+      const percent = getPercentFromClientX(e.clientX);
+      if (dragTarget !== "undecided") {
+        moveHandleToPercent(dragTarget, percent);
+        return;
+      }
+      // Overlapping handles: moving left drags the min, moving right the max
+      if (percent === minPercent) return;
+      const handle: HandleIndex =
+        percent < minPercent ? HANDLE.MIN : HANDLE.MAX;
+      setDragTarget(handle);
+      moveHandleToPercent(handle, percent);
     };
-    const stopDragging = () => setDraggingHandle(null);
+    const stopDragging = () => setDragTarget(null);
 
     window.addEventListener("pointermove", handlePointerMove);
     window.addEventListener("pointerup", stopDragging);
@@ -48,31 +60,34 @@ export function useRangeDrag({
       document.body.style.cursor = "";
       document.body.style.userSelect = "";
     };
-  }, [draggingHandle, getPercentFromClientX, moveHandleToPercent]);
+  }, [dragTarget, minPercent, getPercentFromClientX, moveHandleToPercent]);
 
   const handlePointerDown =
     (handle: HandleIndex) => (e: React.PointerEvent) => {
       e.preventDefault();
       e.stopPropagation();
-      setDraggingHandle(handle);
+      setDragTarget(minPercent === maxPercent ? "undecided" : handle);
     };
 
   // Track click: move the closest handle to the clicked position
   const handleTrackPointerDown = (e: React.PointerEvent<HTMLDivElement>) => {
-    if (draggingHandle !== null) return;
+    if (dragTarget !== null) return;
     e.preventDefault();
     const clickPercent = getPercentFromClientX(e.clientX);
-    const closerHandle: HandleIndex =
-      Math.abs(clickPercent - minPercent) <= Math.abs(clickPercent - maxPercent)
-        ? 0
-        : 1;
+    // Overlapping handles are equally close: pick the one on the clicked side
+    const handlesOverlap = minPercent === maxPercent;
+    const isMinCloser = handlesOverlap
+      ? clickPercent < minPercent
+      : Math.abs(clickPercent - minPercent) <=
+        Math.abs(clickPercent - maxPercent);
+    const closerHandle: HandleIndex = isMinCloser ? HANDLE.MIN : HANDLE.MAX;
     moveHandleToPercent(closerHandle, clickPercent);
-    setDraggingHandle(closerHandle);
+    setDragTarget(closerHandle);
   };
 
   return {
     trackRef,
-    draggingHandle,
+    draggingHandle: dragTarget === "undecided" ? null : dragTarget,
     handlePointerDown,
     handleTrackPointerDown,
   };

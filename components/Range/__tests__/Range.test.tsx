@@ -96,6 +96,14 @@ describe("Range", () => {
         (screen.getByTestId("min-label") as HTMLButtonElement).disabled,
       ).toBe(true);
     });
+
+    it("snaps values that are not options to the closest one in fixed mode", () => {
+      renderFixed([6.5, 45]);
+      expect(handleMin().style.left).toBe("20%");
+      expect(handleMax().style.left).toBe("80%");
+      expect(screen.getByTestId("min-label").textContent).toBe("5.99€");
+      expect(screen.getByTestId("max-label").textContent).toBe("50.99€");
+    });
   });
 
   describe("label editing", () => {
@@ -117,14 +125,14 @@ describe("Range", () => {
 
   describe("keyboard", () => {
     it("moves a handle with the arrow keys", async () => {
-      const { user, onChange } = renderNormal({ step: 5 });
+      const { user, onChange } = renderNormal();
       handleMax().focus();
       await user.keyboard("{ArrowRight}");
-      expect(onChange).toHaveBeenLastCalledWith([20, 65]);
+      expect(onChange).toHaveBeenLastCalledWith([20, 61]);
 
       handleMin().focus();
       await user.keyboard("{ArrowDown}");
-      expect(onChange).toHaveBeenLastCalledWith([15, 60]);
+      expect(onChange).toHaveBeenLastCalledWith([19, 60]);
     });
 
     it("moves one option at a time in fixed mode without crossing", async () => {
@@ -194,6 +202,47 @@ describe("Range", () => {
       await user.pointer({ coords: { clientX: 97 } });
 
       expect(onChange).toHaveBeenLastCalledWith([5.99, 70.99]);
+    });
+
+    it("drags overlapping handles at the maximum to the left", async () => {
+      const { user, onChange } = renderNormal({ value: [100, 100] });
+      await user.pointer({
+        keys: "[MouseLeft>]",
+        target: handleMax(),
+        coords: { clientX: 100 },
+      });
+      await user.pointer({ coords: { clientX: 70 } });
+
+      expect(onChange).toHaveBeenLastCalledWith([70, 100]);
+    });
+
+    it("drags overlapping handles in the direction of the first move", async () => {
+      const { user, onChange } = renderNormal({ value: [40, 40] });
+      await user.pointer({
+        keys: "[MouseLeft>]",
+        target: handleMax(),
+        coords: { clientX: 40 },
+      });
+      await user.pointer({ coords: { clientX: 55 } });
+
+      expect(onChange).toHaveBeenLastCalledWith([40, 55]);
+    });
+
+    it("moves the handle on the clicked side when the handles overlap", async () => {
+      const { user, onChange } = renderNormal({ value: [40, 40] });
+      await user.pointer({
+        keys: "[MouseLeft]",
+        target: track(),
+        coords: { clientX: 75 },
+      });
+      expect(onChange).toHaveBeenLastCalledWith([40, 75]);
+
+      await user.pointer({
+        keys: "[MouseLeft]",
+        target: track(),
+        coords: { clientX: 15 },
+      });
+      expect(onChange).toHaveBeenLastCalledWith([15, 40]);
     });
   });
 });

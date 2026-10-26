@@ -4,11 +4,13 @@ import {
   percentToValue,
   indexToPercent,
   percentToIndex,
+  closestIndex,
   resolveNonCrossingRange,
 } from "@/lib/range-utils";
 import {
   DEFAULT_MAX_LIMIT,
   DEFAULT_MIN_LIMIT,
+  HANDLE,
   NO_RANGE_VALUES,
   RANGE_MODE,
 } from "../constants";
@@ -37,31 +39,32 @@ export function useRangeModel(props: RangeProps) {
   const { rangeValues, isDiscrete, minLimit, maxLimit, step } = config;
   const { onChange } = props;
 
-  const [currentMin, currentMax] = resolveNonCrossingRange(
+  const [clampedMin, clampedMax] = resolveNonCrossingRange(
     props.value[0],
     props.value[1],
     minLimit,
     maxLimit,
   );
 
-  // Value -> track percentage: by index in fixed mode, linear otherwise
-  const toPercent = (value: number, fallbackIndex: number) => {
-    if (!isDiscrete) return valueToPercent(value, minLimit, maxLimit);
-    const index = rangeValues.indexOf(value);
-    return indexToPercent(
-      index === -1 ? fallbackIndex : index,
-      rangeValues.length,
-    );
-  };
+  // In fixed mode, values that are not options snap to the closest one
+  const minIndex = isDiscrete ? closestIndex(rangeValues, clampedMin) : -1;
+  const maxIndex = isDiscrete ? closestIndex(rangeValues, clampedMax) : -1;
+  const currentMin = isDiscrete ? rangeValues[minIndex] : clampedMin;
+  const currentMax = isDiscrete ? rangeValues[maxIndex] : clampedMax;
 
-  const minPercent = toPercent(currentMin, 0);
-  const maxPercent = toPercent(currentMax, rangeValues.length - 1);
+  // Value -> track percentage: by index in fixed mode, linear otherwise
+  const minPercent = isDiscrete
+    ? indexToPercent(minIndex, rangeValues.length)
+    : valueToPercent(currentMin, minLimit, maxLimit);
+  const maxPercent = isDiscrete
+    ? indexToPercent(maxIndex, rangeValues.length)
+    : valueToPercent(currentMax, minLimit, maxLimit);
 
   // Handles never cross: min is capped at currentMax, max floored at currentMin
   const setHandleValue = useCallback(
     (handle: HandleIndex, value: number) => {
       onChange(
-        handle === 0
+        handle === HANDLE.MIN
           ? [Math.min(value, currentMax), currentMax]
           : [currentMin, Math.max(value, currentMin)],
       );
@@ -82,6 +85,8 @@ export function useRangeModel(props: RangeProps) {
 
   return {
     ...config,
+    minIndex,
+    maxIndex,
     currentMin,
     currentMax,
     minPercent,

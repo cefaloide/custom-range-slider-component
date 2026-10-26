@@ -1,4 +1,4 @@
-import { RANGE_MODE } from "./constants";
+import { HANDLE, RANGE_MODE } from "./constants";
 
 export interface BaseRangeProps {
   ariaLabelMax?: string;
@@ -30,7 +30,7 @@ export interface FixedRangeProps extends BaseRangeProps {
 
 export type RangeProps = NormalRangeProps | FixedRangeProps;
 
-export type HandleIndex = 0 | 1;
+export type HandleIndex = (typeof HANDLE)[keyof typeof HANDLE];
 
 export interface RangeConfig {
   isFixedMode: boolean;

@@ -3,6 +3,11 @@ export const RANGE_MODE = {
   FIXED: "fixed",
 } as const;
 
+export const HANDLE = {
+  MIN: 0,
+  MAX: 1,
+} as const;
+
 // Stable reference so memoized callbacks don't change on every render
 export const NO_RANGE_VALUES: number[] = [];
 

@@ -7,7 +7,7 @@ import { RangeBounds } from "./RangeBounds";
 import { useRangeModel } from "./hooks/useRangeModel";
 import { useRangeDrag } from "./hooks/useRangeDrag";
 import { useRangeKeyboard } from "./hooks/useRangeKeyboard";
-import { DEFAULT_CURRENCY } from "./constants";
+import { DEFAULT_CURRENCY, HANDLE } from "./constants";
 import type { RangeProps } from "./types";
 
 export function Range(props: RangeProps) {
@@ -26,6 +26,8 @@ export function Range(props: RangeProps) {
     maxLimit,
     step,
     isLabelEditable,
+    minIndex,
+    maxIndex,
     currentMin,
     currentMax,
     minPercent,
@@ -43,13 +45,15 @@ export function Range(props: RangeProps) {
 
   const handleKeyDown = useRangeKeyboard({
     isDiscrete,
-    rangeValuesLength: rangeValues.length,
+    rangeValues,
     step,
     minLimit,
     maxLimit,
-    minPercent,
-    maxPercent,
-    moveHandleToPercent,
+    minIndex,
+    maxIndex,
+    currentMin,
+    currentMax,
+    setHandleValue,
   });
 
   return (
@@ -76,7 +80,7 @@ export function Range(props: RangeProps) {
             minLimit={minLimit}
             maxLimit={maxLimit}
             otherHandleValue={currentMax}
-            onValueCommit={(value) => setHandleValue(0, value)}
+            onValueCommit={(value) => setHandleValue(HANDLE.MIN, value)}
             testId="min-label"
           />
         </div>
@@ -95,11 +99,11 @@ export function Range(props: RangeProps) {
               value={currentMin}
               minValue={minLimit}
               maxValue={currentMax}
-              isDragging={draggingHandle === 0}
+              isDragging={draggingHandle === HANDLE.MIN}
               ariaLabel={ariaLabelMin}
               testId="handle-min"
-              onPointerDown={handlePointerDown(0)}
-              onKeyDown={handleKeyDown(0)}
+              onPointerDown={handlePointerDown(HANDLE.MIN)}
+              onKeyDown={handleKeyDown(HANDLE.MIN)}
             />
 
             {/* Max Handle (Right) */}
@@ -108,11 +112,11 @@ export function Range(props: RangeProps) {
               value={currentMax}
               minValue={currentMin}
               maxValue={maxLimit}
-              isDragging={draggingHandle === 1}
+              isDragging={draggingHandle === HANDLE.MAX}
               ariaLabel={ariaLabelMax}
               testId="handle-max"
-              onPointerDown={handlePointerDown(1)}
-              onKeyDown={handleKeyDown(1)}
+              onPointerDown={handlePointerDown(HANDLE.MAX)}
+              onKeyDown={handleKeyDown(HANDLE.MAX)}
             />
           </RangeTrack>
         </div>
@@ -127,7 +131,7 @@ export function Range(props: RangeProps) {
             minLimit={minLimit}
             maxLimit={maxLimit}
             otherHandleValue={currentMin}
-            onValueCommit={(value) => setHandleValue(1, value)}
+            onValueCommit={(value) => setHandleValue(HANDLE.MAX, value)}
             testId="max-label"
           />
         </div>

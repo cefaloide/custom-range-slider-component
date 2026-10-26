@@ -6,7 +6,7 @@ import { useApiData } from "@/hooks/useApiData";
 import { useState } from "react";
 import type { FixedApiResponse } from "@/types/api";
 
-export default function Exercice2() {
+export default function Exercise2() {
   const { data, error, isLoading, retry } =
     useApiData<FixedApiResponse>("/api/fixed");
 
@@ -25,7 +25,7 @@ export default function Exercice2() {
 
   return (
     <>
-      <h1>Exercice 2 Page</h1>
+      <h1>Exercise 2 Page</h1>
       {isLoading || !data ? (
         <Spinner />
       ) : (

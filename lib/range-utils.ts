@@ -36,14 +36,40 @@ export function percentToValue(
   const clampedPercent = clamp(percent, 0, 100);
   const rawValue = min + (clampedPercent / 100) * (max - min);
 
-  if (step <= 0) return rawValue;
+  return snapToStep(rawValue, min, max, step);
+}
+
+/**
+ * Clamps a value to [min, max] and rounds it to the closest multiple of step (counted from min).
+ */
+export function snapToStep(
+  value: number,
+  min: number,
+  max: number,
+  step = 1,
+): number {
+  const clampedValue = clamp(value, min, max);
+  if (step <= 0) return clampedValue;
 
   // Determine decimal precision of step to avoid IEEE 754 float precision errors
   const stepDecimals = (step.toString().split(".")[1] || "").length;
-  const steppedValue = Math.round((rawValue - min) / step) * step + min;
+  const steppedValue = Math.round((clampedValue - min) / step) * step + min;
   const finalValue = Number(steppedValue.toFixed(stepDecimals));
 
   return clamp(finalValue, min, max);
+}
+
+/**
+ * Returns the index of the option closest to value (the first one on a tie).
+ */
+export function closestIndex(options: number[], value: number): number {
+  let bestIndex = 0;
+  for (let i = 1; i < options.length; i++) {
+    if (Math.abs(options[i] - value) < Math.abs(options[bestIndex] - value)) {
+      bestIndex = i;
+    }
+  }
+  return bestIndex;
 }
 
 /**

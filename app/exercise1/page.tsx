@@ -6,7 +6,7 @@ import { useApiData } from "@/hooks/useApiData";
 import { useState } from "react";
 import type { NormalApiResponse } from "@/types/api";
 
-export default function Exercice1() {
+export default function Exercise1() {
   const { data, error, isLoading, retry } =
     useApiData<NormalApiResponse>("/api/normal");
 
@@ -25,7 +25,7 @@ export default function Exercice1() {
 
   return (
     <>
-      <h1>Exercice 1 Page</h1>
+      <h1>Exercise 1 Page</h1>
       {isLoading || !data ? (
         <Spinner />
       ) : (
