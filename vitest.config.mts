@@ -11,7 +11,7 @@ export default defineConfig({
     setupFiles: ["./vitest.setup.ts"],
     coverage: {
       provider: "v8",
-      include: ["components/Range/**", "lib/**", "hooks/**"],
+      include: ["components/**", "lib/**", "hooks/**"],
       exclude: ["**/__tests__/**"],
     },
   },

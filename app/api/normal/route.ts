@@ -1,15 +1,10 @@
 import { NextResponse } from "next/server";
-import type { NormalApiResponse } from "@/types/api";
+import { NORMAL_RANGE_DATA } from "@/lib/mock-data";
 
 /**
  * Mocked HTTP service
  * Returns the minimum and maximum boundaries for the normal range component.
  */
 export async function GET() {
-  const data: NormalApiResponse = {
-    min: 1,
-    max: 100,
-  };
-
-  return NextResponse.json(data);
+  return NextResponse.json(NORMAL_RANGE_DATA);
 }

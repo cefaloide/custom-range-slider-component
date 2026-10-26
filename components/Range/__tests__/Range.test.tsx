@@ -60,8 +60,8 @@ describe("Range", () => {
     it("shows the bounds header with the currency", () => {
       renderNormal({ min: 1, max: 10, currency: "€" });
       const header = screen.getByTestId("range-bounds-header");
-      expect(header.textContent).toContain("Min 1€");
-      expect(header.textContent).toContain("Max 10€");
+      expect(header).toHaveTextContent("Min 1€");
+      expect(header).toHaveTextContent("Max 10€");
     });
 
     it("clamps values outside the limits", () => {
@@ -72,35 +72,32 @@ describe("Range", () => {
 
     it("positions the handles and exposes slider semantics", () => {
       renderNormal({ ariaLabelMin: "From", ariaLabelMax: "To" });
-      expect(handleMin().style.left).toBe("20%");
-      expect(handleMax().style.left).toBe("60%");
+      expect(handleMin()).toHaveStyle({ left: "20%" });
+      expect(handleMax()).toHaveStyle({ left: "60%" });
 
       const highlight = screen.getByTestId("range-highlight");
-      expect(highlight.style.left).toBe("20%");
-      expect(highlight.style.width).toBe("40%");
+      expect(highlight).toHaveStyle({ left: "20%", width: "40%" });
 
       const [min, max] = screen.getAllByRole("slider");
-      expect(min.getAttribute("aria-label")).toBe("From");
-      expect(min.getAttribute("aria-valuemax")).toBe("60");
-      expect(min.getAttribute("aria-valuenow")).toBe("20");
-      expect(max.getAttribute("aria-label")).toBe("To");
-      expect(max.getAttribute("aria-valuemin")).toBe("20");
-      expect(max.getAttribute("aria-valuenow")).toBe("60");
+      expect(min).toHaveAttribute("aria-label", "From");
+      expect(min).toHaveAttribute("aria-valuemax", "60");
+      expect(min).toHaveAttribute("aria-valuenow", "20");
+      expect(max).toHaveAttribute("aria-label", "To");
+      expect(max).toHaveAttribute("aria-valuemin", "20");
+      expect(max).toHaveAttribute("aria-valuenow", "60");
     });
 
     it("positions handles by option index and disables editing in fixed mode", () => {
       renderFixed();
-      expect(handleMin().style.left).toBe("20%");
-      expect(handleMax().style.left).toBe("60%");
-      expect(
-        (screen.getByTestId("min-label") as HTMLButtonElement).disabled,
-      ).toBe(true);
+      expect(handleMin()).toHaveStyle({ left: "20%" });
+      expect(handleMax()).toHaveStyle({ left: "60%" });
+      expect(screen.getByTestId("min-label")).toBeDisabled();
     });
 
     it("snaps values that are not options to the closest one in fixed mode", () => {
       renderFixed([6.5, 45]);
-      expect(handleMin().style.left).toBe("20%");
-      expect(handleMax().style.left).toBe("80%");
+      expect(handleMin()).toHaveStyle({ left: "20%" });
+      expect(handleMax()).toHaveStyle({ left: "80%" });
       expect(screen.getByTestId("min-label").textContent).toBe("5.99€");
       expect(screen.getByTestId("max-label").textContent).toBe("50.99€");
     });

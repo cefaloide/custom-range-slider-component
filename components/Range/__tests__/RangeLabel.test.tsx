@@ -34,18 +34,19 @@ const typeValue = async (user: UserEvent, value: string) => {
 describe("RangeLabel", () => {
   it("opens a focused input and commits a valid value on Enter", async () => {
     const { user, onValueCommit } = renderLabel();
-    expect(label().getAttribute("aria-label")).toBe(
+    expect(label()).toHaveAttribute(
+      "aria-label",
       "Minimum value 20€. Click to edit.",
     );
 
     await startEditing(user);
-    expect(input().value).toBe("20");
-    expect(document.activeElement).toBe(input());
+    expect(input()).toHaveValue("20");
+    expect(input()).toHaveFocus();
 
     await typeValue(user, "45");
     await user.keyboard("{Enter}");
     expect(onValueCommit).toHaveBeenCalledWith(45);
-    expect(screen.queryByRole("textbox")).toBeNull();
+    expect(screen.queryByRole("textbox")).not.toBeInTheDocument();
   });
 
   it("shows an error for an invalid value until it is fixed", async () => {
@@ -60,7 +61,7 @@ describe("RangeLabel", () => {
     expect(onValueCommit).not.toHaveBeenCalled();
 
     await typeValue(user, "45");
-    expect(screen.queryByRole("alert")).toBeNull();
+    expect(screen.queryByRole("alert")).not.toBeInTheDocument();
     await user.keyboard("{Enter}");
 
     expect(onValueCommit).toHaveBeenCalledTimes(1);
@@ -75,7 +76,7 @@ describe("RangeLabel", () => {
     await user.keyboard("{Escape}");
 
     expect(onValueCommit).not.toHaveBeenCalled();
-    expect(screen.queryByRole("alert")).toBeNull();
-    expect(label()).toBeTruthy();
+    expect(screen.queryByRole("alert")).not.toBeInTheDocument();
+    expect(label()).toBeInTheDocument();
   });
 });
